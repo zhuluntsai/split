@@ -105,7 +105,8 @@ def area_filter(arg):
                     area_filter_json['images'].append(images)
                     pass_area_filter = False
                 else:
-                    os.remove(f"temp_{str(images['id']):>05}.jpg")
+                    shutil.move(f"temp_{str(images['id']):>05}.jpg", f"large_hole/temp_{str(images['id']):>05}.jpg")
+                    # os.remove(f"temp_{str(images['id']):>05}.jpg")
 
     with open('0.json', 'w') as outfile:
         json.dump(area_filter_json, outfile, indent = 2, ensure_ascii = False)
