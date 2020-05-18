@@ -1,0 +1,4 @@
+classes = 1
+train = training.txt
+valid = testing.txt
+names = coco.names
