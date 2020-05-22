@@ -17,6 +17,7 @@ images_folder_path = original_folder_path + "/images"
 labels_folder_path = original_folder_path + "/labels"
 
 empty_json = {"images": [], "type": "instances", "annotations": [], "categories": [ { "supercategory": "none", "id": 1, "name": "hole"} ] }
+annotations_list = [370, 381, 382, 371, 379, 216, 383, 387, 384, 389, 386, 385, 388, 394, 390, 391, 392, 393, 447, 448, 449, 450, 452, 451, 456, 455, 453, 458, 454, 457, 777, 778, 780, 779, 781, 782, 784, 783, 785, 786, 787, 788, 789, 790, 791, 793, 796, 792, 794, 795, 797, 798, 799, 800, 604, 606, 607, 605, 609, 608, 611, 610, 621, 615, 612, 622, 614, 613, 616, 617, 618, 619, 620, 623, 624, 625, 626, 627, 1, 2, 3, 4, 9, 10, 7, 6, 8, 5, 13, 12, 11, 15, 16, 24, 18, 19, 14, 20, 17, 21, 23, 22, 848, 854, 853, 857, 855, 852, 847, 858, 851, 849, 858, 850, 26, 27, 35, 31, 32, 36, 38, 39, 30, 507, 509, 514, 508, 510, 512, 506, 516, 521, 523, 525, 527, 529, 530, 531, 531, 536, 423, 421, 427, 429, 435, 437, 441, 445, 443,   255, 252, 259, 280, 276, 261, 283,      265, 269, 272,      307, 293, 300,      321, 325, 327, 332, 318, 315, 304,    290, 464, 467,       489, 459, 476, 492, 480, 498, 473, 484, 496, 502, 546, 548, 549, 550, 561, 560, 558, 556, 569, 568, 574, 573, 584, 583, 575, 577,      586, 579, 652, 679, 674, 683, 695,     883, 885, 884, 877, 875, 876, 881, 880, 879, 870, 871, 869, 874, 873, 872, 887, 888, 889, 890, 891, 892, 896, 897, 898, 901, 900, 899, 895, 894, 893, 45, 44, 43, 42, 41, 40, 53, 54, 52, 56, 57, 55, 47, 48, 46, 50, 49, 68, 69, 63, 59, 80, 85, 75, 158, 153, 163, 185, 189, 193, 168, 178, 737, 734, 735, 724, 723, 752, 751, 748, 750, 749, 745, 743, 746, 835, 834, 842, 841, 843, 846, 145, 146, 150, 102, 103, 96, 94, 101, 90, 803, 809, 804, 808]
 
 def create_parser():
 
@@ -62,15 +63,15 @@ def combine():
                 combine_json['images'].append(images)
 
             # append 'annotations'
-            for annotations in old_json['annotations']:
+            for annotations in old_json['annotations']:  
                 j += 1
-                annotations['id'] = j 
+                annotations['id'] = f"temp_{j:>05}"
                 
-                annotations['image_id'] = "temp_" + str(f"{annotations['image_id'] + accumulate:>05}")
+                annotations['image_id'] = f"temp_{annotations['image_id'] + accumulate:>05}"
                 combine_json['annotations'].append(annotations)
 
             accumulate += len(old_json['images'])
-            os.remove(item)
+            os.remove(item) 
 
     with open('0.json', 'w') as outfile:
         json.dump(combine_json, outfile, indent = 2, ensure_ascii = False)
@@ -79,33 +80,28 @@ def area_filter(arg):
 
     area_filter_json = copy.deepcopy(empty_json)
     j = 0
-    k = 0
-    pass_area_filter = False
+    pass_area_filter = []
 
     for item in os.listdir():
         if item == "0.json":
-
             all_json = json.load(open(item, "r"))
 
-            for images in all_json['images']:
-                all_area = images['height'] * images['width']
+    for annotations in all_json['annotations']:
+        for annotation_id in annotations_list:
 
-                for annotations in all_json['annotations']:
+            if str(annotations['image_id']) != f"temp_{annotation_id:>05}":
+                pass_area_filter = True
+                j += 1
+                annotations['id'] = j
 
-                    # match image id and filter area smaller than area ratio
-                    if str(annotations['image_id']) == f"temp_{str(images['id']):>05}" and annotations['area'] / all_area <= arg.area_filter_ratio:
-                        pass_area_filter = True
-                        j += 1
-                        annotations['id'] = j
-
-                        area_filter_json['annotations'].append(annotations)
-                
-                # append image pass area filter
-                if pass_area_filter == True:
-                    area_filter_json['images'].append(images)
-                    pass_area_filter = False
-                else:
-                    os.remove(f"temp_{str(images['id']):>05}.jpg")
+                area_filter_json['annotations'].append(annotations)
+        
+        # # append image pass area filter
+        # if pass_area_filter == True:
+        #     area_filter_json['images'].append(images)
+        #     pass_area_filter = False
+        # else:
+        #     os.remove(f"temp_{str(images['id']):>05}.jpg")
 
     with open('0.json', 'w') as outfile:
         json.dump(area_filter_json, outfile, indent = 2, ensure_ascii = False)
@@ -168,7 +164,7 @@ def convert(usage: str, folder_path: str, file_name):
                 i += 1
                 os.rename(folder_path + "/" + images['file_name'], folder_path + "/" + images['file_name'][5:])
 
-                file_name_list_txt.write(f"images/{images['id']:>05}.jpg\n")
+                file_name_list_txt.write(f"custom_data/images/{images['id']:>05}.jpg\n")
                 yolo_format_txt = open(f"labels/{images['id']:>05}.txt", 'w')
 
                 for annotations in all_json['annotations']:
@@ -235,7 +231,7 @@ if __name__ == "__main__":
     combine()
     print(" jsons have been combined")
 
-    area_filter(arg)
+    # area_filter(arg)
     print(" json has been filtered")
 
     #body
