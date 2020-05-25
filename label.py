@@ -20,7 +20,7 @@ for item in os.listdir():
                 rectangle_position = (annotations['bbox'][0], annotations['bbox'][1], annotations['bbox'][0] + annotations['bbox'][2], annotations['bbox'][1] + annotations['bbox'][3])
                 
                 draw.rectangle(rectangle_position, outline= color, width= 5)
-                draw.text(text_position, annotations['id'], font= font, fill= color)
+                draw.text(text_position, str(annotations['id']), font= font, fill= color)
 
         image.save(item)
                 

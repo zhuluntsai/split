@@ -17,7 +17,8 @@ images_folder_path = original_folder_path + "/images"
 labels_folder_path = original_folder_path + "/labels"
 
 empty_json = {"images": [], "type": "instances", "annotations": [], "categories": [ { "supercategory": "none", "id": 1, "name": "hole"} ] }
-annotations_list = [370, 381, 382, 371, 379, 216, 383, 387, 384, 389, 386, 385, 388, 394, 390, 391, 392, 393, 447, 448, 449, 450, 452, 451, 456, 455, 453, 458, 454, 457, 777, 778, 780, 779, 781, 782, 784, 783, 785, 786, 787, 788, 789, 790, 791, 793, 796, 792, 794, 795, 797, 798, 799, 800, 604, 606, 607, 605, 609, 608, 611, 610, 621, 615, 612, 622, 614, 613, 616, 617, 618, 619, 620, 623, 624, 625, 626, 627, 1, 2, 3, 4, 9, 10, 7, 6, 8, 5, 13, 12, 11, 15, 16, 24, 18, 19, 14, 20, 17, 21, 23, 22, 848, 854, 853, 857, 855, 852, 847, 858, 851, 849, 858, 850, 26, 27, 35, 31, 32, 36, 38, 39, 30, 507, 509, 514, 508, 510, 512, 506, 516, 521, 523, 525, 527, 529, 530, 531, 531, 536, 423, 421, 427, 429, 435, 437, 441, 445, 443,   255, 252, 259, 280, 276, 261, 283,      265, 269, 272,      307, 293, 300,      321, 325, 327, 332, 318, 315, 304,    290, 464, 467,       489, 459, 476, 492, 480, 498, 473, 484, 496, 502, 546, 548, 549, 550, 561, 560, 558, 556, 569, 568, 574, 573, 584, 583, 575, 577,      586, 579, 652, 679, 674, 683, 695,     883, 885, 884, 877, 875, 876, 881, 880, 879, 870, 871, 869, 874, 873, 872, 887, 888, 889, 890, 891, 892, 896, 897, 898, 901, 900, 899, 895, 894, 893, 45, 44, 43, 42, 41, 40, 53, 54, 52, 56, 57, 55, 47, 48, 46, 50, 49, 68, 69, 63, 59, 80, 85, 75, 158, 153, 163, 185, 189, 193, 168, 178, 737, 734, 735, 724, 723, 752, 751, 748, 750, 749, 745, 743, 746, 835, 834, 842, 841, 843, 846, 145, 146, 150, 102, 103, 96, 94, 101, 90, 803, 809, 804, 808]
+annotations_list = [370, 381, 382, 371, 379, 216, 383, 387, 384, 389, 386, 385, 388, 394, 390, 391, 392, 393, 447, 448, 449, 450, 452, 451, 456, 455, 453, 458, 454, 457, 777, 778, 780, 779, 781, 782, 784, 783, 785, 786, 787, 788, 789, 790, 791, 793, 796, 792, 794, 795, 797, 798, 799, 800, 604, 606, 607, 605, 609, 608, 611, 610, 621, 615, 612, 622, 614, 613, 616, 617, 618, 619, 620, 623, 624, 625, 626, 627, 1, 2, 3, 4, 9, 10, 7, 6, 8, 5, 13, 12, 11, 15, 16, 24, 18, 19, 14, 20, 17, 21, 23, 22, 848, 854, 853, 857, 855, 852, 847, 856, 851, 849, 858, 850, 26, 27, 35, 31, 37, 32, 36, 38, 39, 30, 507, 509, 514, 508, 510, 512, 506, 516, 521, 523, 525, 527, 529, 538, 531, 536, 423, 421, 427, 429, 435, 437, 441, 445, 443,   255, 252, 259, 279, 280, 276, 261, 283,      265, 267, 269, 271, 272, 274, 286,       307, 309, 293, 297, 299, 300, 313,      321, 325, 327, 330, 332, 318, 315, 317, 304,    303, 290, 464, 467,       489, 487, 459, 476, 492, 480, 498, 473, 484, 496, 502, 546, 548, 549, 550, 561, 560, 552, 553, 555, 566, 564, 567, 558, 556, 569, 568, 574, 573, 584, 583, 575, 577, 578,      586, 588, 579, 652, 659, 660, 658, 665, 664, 663, 667, 668, 669, 679, 678, 677, 674, 672, 673, 683, 682, 681, 695, 694, 693, 687, 686, 689, 690, 691, 685, 700, 701, 699,    883, 885, 884, 877, 875, 876, 881, 880, 879, 870, 871, 869, 874, 873, 872, 887, 888, 889, 890, 891, 892, 896, 897, 898, 901, 900, 899, 895, 894, 893, 45, 44, 43, 42, 41, 40, 53, 54, 52, 56, 57, 55, 47, 48, 46, 51, 50, 49, 68, 69, 70, 71, 72, 74, 63, 64, 65, 61, 60, 59, 80, 81, 82, 85, 89, 86, 75, 76, 77, 158, 159, 160, 153, 154, 155, 163, 164, 165, 185, 186, 189, 190, 193, 197, 194, 168, 169, 170, 178, 737, 734, 735, 724, 723, 752, 751, 748, 750, 749, 745, 743, 746, 835, 842, 841, 843, 845, 846, 837, 145, 146, 150, 102, 103, 96, 94, 101, 100, 90, 803, 809, 804, 808]
+images_list = []
 
 def create_parser():
 
@@ -56,7 +57,7 @@ def combine():
             # append 'images' and rename the file name of pictures
             for images in old_json['images']:
                 i += 1
-                images['id'] = i
+                images['id'] = f"temp_{i:>05}"
 
                 os.rename(images['file_name'], f'temp_{i:>05}.jpg')
                 images['file_name'] = f'temp_{i:>05}.jpg'
@@ -80,28 +81,41 @@ def area_filter(arg):
 
     area_filter_json = copy.deepcopy(empty_json)
     j = 0
-    pass_area_filter = []
 
     for item in os.listdir():
         if item == "0.json":
             all_json = json.load(open(item, "r"))
 
     for annotations in all_json['annotations']:
+        is_pass = True
+
+        # check annotations['id'] is in the annotations_list
         for annotation_id in annotations_list:
+            if annotations['id'] == f"temp_{annotation_id:>05}":
+                is_pass = False
+                annotations_list.remove(annotation_id)
 
-            if str(annotations['image_id']) != f"temp_{annotation_id:>05}":
-                pass_area_filter = True
-                j += 1
-                annotations['id'] = j
+        # if annotations['id'] is not in the annotations_list
+        if is_pass: 
+            j += 1
+            area_filter_json['annotations'].append(annotations)
 
-                area_filter_json['annotations'].append(annotations)
+            images_list.append(annotations["image_id"])
+
+    for images in all_json['images']:
+        is_pass = False
         
-        # # append image pass area filter
-        # if pass_area_filter == True:
-        #     area_filter_json['images'].append(images)
-        #     pass_area_filter = False
-        # else:
-        #     os.remove(f"temp_{str(images['id']):>05}.jpg")
+        # check images['id'] is in the images_list
+        for image_id in set(images_list):
+            if image_id == images['id']:
+                is_pass = True
+                images_list.remove(image_id)
+                area_filter_json['images'].append(images)
+
+        # if images['id'] is not in the images_list
+        if not is_pass:
+            os.remove(images['id'] + ".jpg")
+
 
     with open('0.json', 'w') as outfile:
         json.dump(area_filter_json, outfile, indent = 2, ensure_ascii = False)
@@ -201,7 +215,7 @@ def result(arg):
 
     result_txt.close()
 
-    os.remove("0.json")
+    # os.remove("0.json")
     for item in os.listdir():
         if item.startswith('temp'):
             os.remove(item)
@@ -231,7 +245,7 @@ if __name__ == "__main__":
     combine()
     print(" jsons have been combined")
 
-    # area_filter(arg)
+    area_filter(arg)
     print(" json has been filtered")
 
     #body
@@ -265,5 +279,7 @@ if __name__ == "__main__":
         print(" format has been converted to yolo format")
 
     #end
-    result(arg)
-    
+    try:
+        result(arg)
+    except:
+        pass
