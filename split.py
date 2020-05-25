@@ -17,7 +17,7 @@ images_folder_path = original_folder_path + "/images"
 labels_folder_path = original_folder_path + "/labels"
 
 empty_json = {"images": [], "type": "instances", "annotations": [], "categories": [ { "supercategory": "none", "id": 1, "name": "hole"} ] }
-annotations_list = [370, 381, 382, 371, 379, 216, 383, 387, 384, 389, 386, 385, 388, 394, 390, 391, 392, 393, 447, 448, 449, 450, 452, 451, 456, 455, 453, 458, 454, 457, 777, 778, 780, 779, 781, 782, 784, 783, 785, 786, 787, 788, 789, 790, 791, 793, 796, 792, 794, 795, 797, 798, 799, 800, 604, 606, 607, 605, 609, 608, 611, 610, 621, 615, 612, 622, 614, 613, 616, 617, 618, 619, 620, 623, 624, 625, 626, 627, 1, 2, 3, 4, 9, 10, 7, 6, 8, 5, 13, 12, 11, 15, 16, 24, 18, 19, 14, 20, 17, 21, 23, 22, 848, 854, 853, 857, 855, 852, 847, 856, 851, 849, 858, 850, 26, 27, 35, 31, 37, 32, 36, 38, 39, 30, 507, 509, 514, 508, 510, 512, 506, 516, 521, 523, 525, 527, 529, 538, 531, 536, 423, 421, 427, 429, 435, 437, 441, 445, 443,   255, 252, 259, 279, 280, 276, 261, 283,      265, 267, 269, 271, 272, 274, 286,       307, 309, 293, 297, 299, 300, 313,      321, 325, 327, 330, 332, 318, 315, 317, 304,    303, 290, 464, 467,       489, 487, 459, 476, 492, 480, 498, 473, 484, 496, 502, 546, 548, 549, 550, 561, 560, 552, 553, 555, 566, 564, 567, 558, 556, 569, 568, 574, 573, 584, 583, 575, 577, 578,      586, 588, 579, 652, 659, 660, 658, 665, 664, 663, 667, 668, 669, 679, 678, 677, 674, 672, 673, 683, 682, 681, 695, 694, 693, 687, 686, 689, 690, 691, 685, 700, 701, 699,    883, 885, 884, 877, 875, 876, 881, 880, 879, 870, 871, 869, 874, 873, 872, 887, 888, 889, 890, 891, 892, 896, 897, 898, 901, 900, 899, 895, 894, 893, 45, 44, 43, 42, 41, 40, 53, 54, 52, 56, 57, 55, 47, 48, 46, 51, 50, 49, 68, 69, 70, 71, 72, 74, 63, 64, 65, 61, 60, 59, 80, 81, 82, 85, 89, 86, 75, 76, 77, 158, 159, 160, 153, 154, 155, 163, 164, 165, 185, 186, 189, 190, 193, 197, 194, 168, 169, 170, 178, 737, 734, 735, 724, 723, 752, 751, 748, 750, 749, 745, 743, 746, 835, 842, 841, 843, 845, 846, 837, 145, 146, 150, 102, 103, 96, 94, 101, 100, 90, 803, 809, 804, 808]
+annotations_list = [370, 381, 382, 371, 379, 216, 383, 387, 384, 389, 386, 385, 388, 394, 390, 391, 392, 393, 447, 448, 449, 450, 452, 451, 456, 455, 453, 458, 454, 457, 777, 778, 780, 779, 781, 782, 784, 783, 785, 786, 787, 788, 789, 790, 791, 793, 796, 792, 794, 795, 797, 798, 799, 800, 604, 606, 607, 605, 609, 608, 611, 610, 621, 615, 612, 622, 614, 613, 616, 617, 618, 619, 620, 623, 624, 625, 626, 627, 1, 2, 3, 4, 9, 10, 7, 6, 8, 5, 13, 12, 11, 15, 16, 24, 18, 19, 14, 20, 17, 21, 23, 22, 848, 854, 853, 857, 855, 852, 847, 856, 851, 849, 858, 850, 26, 27, 35, 31, 37, 32, 36, 38, 39, 30, 507, 509, 514, 508, 510, 512, 506, 516, 521, 523, 525, 527, 529, 538, 531, 536, 423, 421, 427, 429, 435, 437, 441, 445, 443,   255, 252, 259, 279, 280, 276, 261, 283,      265, 267, 269, 271, 272, 274, 286,       307, 309, 293, 297, 299, 300, 313,      321, 325, 327, 330, 332, 318, 315, 317, 304,    303, 290, 464, 467,       489, 487, 459, 476, 492, 480, 498, 473, 484, 496, 502, 546, 548, 549, 550, 561, 560, 552, 553, 555, 566, 564, 567, 558, 556, 569, 568, 574, 573, 584, 583, 575, 577, 578,      586, 588, 579, 652, 659, 660, 658, 665, 664, 663, 667, 668, 669, 679, 678, 677, 674, 672, 673, 683, 682, 681, 695, 694, 693, 687, 686, 689, 690, 691, 685, 700, 701, 699,    883, 885, 884, 877, 875, 876, 881, 880, 879, 870, 871, 869, 874, 873, 872, 887, 888, 889, 890, 891, 892, 896, 897, 898, 901, 900, 899, 895, 894, 893, 45, 44, 43, 42, 41, 40, 53, 54, 52, 56, 57, 55, 47, 48, 46, 51, 50, 49, 68, 69, 70, 71, 72, 74, 63, 64, 65, 61, 60, 59, 80, 81, 82, 85, 89, 86, 75, 76, 77, 158, 160, 153, 154, 155, 163, 164, 165, 185, 186, 189, 190, 193, 197, 194, 168, 169, 170, 178, 737, 734, 735, 724, 723, 752, 751, 748, 750, 749, 745, 743, 746, 835, 842, 841, 843, 845, 846, 837, 145, 146, 150, 102, 103, 96, 94, 101, 100, 90, 803, 809, 804, 808]
 images_list = []
 
 def create_parser():
@@ -124,6 +124,7 @@ def split(usage: str, folder_path: str, file_name):
 
     all_json = json.load(open("0.json", "r"))
     data = copy.deepcopy(empty_json)
+    rename_list = open(f"rename_list_{usage}.txt", "w")
 
     i = 0
     j = 0
@@ -138,6 +139,7 @@ def split(usage: str, folder_path: str, file_name):
                 images['id'] = i
 
                 os.rename(folder_path + "/" + images['file_name'], folder_path + "/" + f'{i:>05}.jpg')
+                rename_list.write(images['file_name'] + f' / {i:>05}.jpg \n')
                 images['file_name'] = f'{i:>05}.jpg'
                 data['images'].append(images)
                 
@@ -159,6 +161,8 @@ def split(usage: str, folder_path: str, file_name):
 
     with open(original_folder_path + f'/{usage}_data.json', 'w') as outfile:
         json.dump(data, outfile, indent = 2, ensure_ascii = False)
+
+    rename_list.close()
     
     return i, j
 
@@ -182,7 +186,7 @@ def convert(usage: str, folder_path: str, file_name):
                 yolo_format_txt = open(f"labels/{images['id']:>05}.txt", 'w')
 
                 for annotations in all_json['annotations']:
-                    if str(annotations['image_id']) == f"temp_{str(images['id']):>05}":
+                    if str(annotations['image_id']) == f"{str(images['id']):>05}":
                         j += 1
                         object_center_in_x = ((annotations['bbox'][0] + annotations['bbox'][2]) / 2) / images['width']
                         object_center_in_y = ((annotations['bbox'][1] + annotations['bbox'][3]) / 2) / images['height']
@@ -197,11 +201,12 @@ def convert(usage: str, folder_path: str, file_name):
 
     return i, j
 
-def result(arg):
-    result_txt = open("result.txt", "w")
+def result(arg, output_type: str):
+    result_txt = open(f"result_{output_type}.txt", "w")
 
     result_txt.write(f'''\
  time: {datetime.datetime.now()}
+ output type: {output_type}
 
     train images amount: {train_images_amount}
     train labels amount: {train_labels_amount}
@@ -214,11 +219,6 @@ def result(arg):
     ''')
 
     result_txt.close()
-
-    # os.remove("0.json")
-    for item in os.listdir():
-        if item.startswith('temp'):
-            os.remove(item)
 
 def random_file_name(arg):
 
@@ -266,6 +266,11 @@ if __name__ == "__main__":
 
         print(" json has been split")
 
+        try:
+            result(arg, "split")
+        except:
+            pass
+
     if arg.convert_to_yolo == True:
         os.mkdir(images_folder_path)
         os.mkdir(labels_folder_path)
@@ -278,8 +283,12 @@ if __name__ == "__main__":
 
         print(" format has been converted to yolo format")
 
-    #end
-    try:
-        result(arg)
-    except:
-        pass
+        try:
+            result(arg, "yolo")
+        except:
+            pass
+
+    # end
+    for item in os.listdir():
+        if item.startswith('temp'):
+            os.remove(item)
