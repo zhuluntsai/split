@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import os, shutil, json
 
-all_json = json.load(open("training_data.json", "r"))
+all_json = json.load(open("0.json", "r"))
 font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 30, encoding= 'utf-8')
 color = (255, 0, 0)
 
@@ -24,7 +24,7 @@ for item in os.listdir():
                 
                 draw.polygon(annotations['segmentation'][0], fill=(255, 0, 0, 60), outline="blue")
                 draw.rectangle(rectangle_position, outline= color, width= 6)
-                draw.text(text_position, "hole", font= font, fill= (255, 255, 255))
+                draw.text(text_position, annotations['id'], font= font, fill= (255, 255, 255))
 
         back.paste(poly, (0,0), mask=poly)
         back.save(item, 'png')
