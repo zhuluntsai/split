@@ -10,33 +10,30 @@ from PIL import Image
 
 all_json = json.load(open("0.json", "r"))
 class_type = 0.
-annotation_list = []
-image_list = []
-
-for images in all_json['images']:
-    image_list.append(images['file_name'])
-
-for annotations in all_json['annotations']:
-    annotation_list.append([annotations['bbox'][0], annotations['bbox'][1], annotations['bbox'][0] + annotations['bbox'][2], annotations['bbox'][1] + annotations['bbox'][3], class_type])
-    break
-    
-# annotation_list = np.asarray(annotation_list)
-img = cv2.imread("temp_00025.jpg")[:,:,::-1]
-# bboxes = pkl.load(open("messi_ann.pkl", "rb"))
-bboxes = np.array(annotation_list)
-print(bboxes)
 
 transforms = Sequence([RandomHorizontalFlip(1), RandomScale(0.2, diff = True), RandomRotate(10)])
 
-img, bboxes = transforms(img, bboxes)
+for images in all_json['images']:
+    print(images['file_name'])
+    image = cv2.imread(images['file_name'])[:,:,::-1]
+    bbox_list = []
 
-image = Image.fromarray(img, 'RGB')
-image.save('my.png')
-image.show()
+    for annotations in all_json['annotations']:
+        if images['id'] == annotations['image_id']:
+            bbox_list.append([annotations['bbox'][0], annotations['bbox'][1], annotations['bbox'][0] + annotations['bbox'][2], annotations['bbox'][1] + annotations['bbox'][3], class_type])
+    
+    image, bbox_nparray = transforms(image, np.array(bbox_list))
 
-print(type(img))
-print(bboxes)
-# plt.imshow(draw_rect(img, bboxes))
-plt.imshow(img)
-# plt.show()
-plt.savefig("temp_00025.jpg")
+    image = draw_rect(image, bbox_nparray)
+    image = Image.fromarray(image, 'RGB') 
+    image.save(images['file_name'])
+
+    k = -1
+
+    for annotations in all_json['annotations']:
+        if images['id'] == annotations['image_id']:
+            k += 1
+            annotations['bbox'] = bbox_list[k]
+
+with open('0.json', 'w') as outfile:
+        json.dump(all_json, outfile, indent = 2, ensure_ascii = False)
