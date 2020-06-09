@@ -6,7 +6,7 @@ font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 30, en
 color = (255, 0, 0)
 
 for item in os.listdir():
-    if item.endswith('jpg'):
+    if item.endswith('.jpg'):
         print(item)
         
         image = Image.open(item)
@@ -20,8 +20,12 @@ for item in os.listdir():
         for annotations in all_json['annotations']:
             if f"{annotations['image_id']:>05}.jpg" == item:
                 text_position = (annotations['bbox'][0], annotations['bbox'][1])
-                rectangle_position = (annotations['bbox'][0], annotations['bbox'][1], annotations['bbox'][0] + annotations['bbox'][2], annotations['bbox'][1] + annotations['bbox'][3])
-                
+
+                if len(annotations['bbox']) == 4:
+                    rectangle_position = (annotations['bbox'][0], annotations['bbox'][1], annotations['bbox'][0] + annotations['bbox'][2], annotations['bbox'][1] + annotations['bbox'][3])
+                else:
+                    rectangle_position = (annotations['bbox'][0], annotations['bbox'][1], annotations['bbox'][2], annotations['bbox'][3])
+
                 draw.polygon(annotations['segmentation'][0], fill=(255, 0, 0, 60), outline="blue")
                 draw.rectangle(rectangle_position, outline= color, width= 6)
                 draw.text(text_position, annotations['id'], font= font, fill= (255, 255, 255))

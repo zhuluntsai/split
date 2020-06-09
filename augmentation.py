@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import json
 from PIL import Image
 
-
 all_json = json.load(open("0.json", "r"))
 class_type = 0.
 
@@ -21,12 +20,15 @@ transforms = Sequence([RandomTranslate()])
 
 for images in all_json['images']:
 
+    print(images['file_name'])
     image = cv2.imread(images['file_name'])[:,:,::-1]
     bbox_list = []
 
     for annotations in all_json['annotations']:
         if images['id'] == annotations['image_id']:
             bbox_list.append([annotations['bbox'][0], annotations['bbox'][1], annotations['bbox'][0] + annotations['bbox'][2], annotations['bbox'][1] + annotations['bbox'][3], class_type])
+    
+    # if whole bbox is out of the image, program will retransform it until all bboxes are in the image
     while 1:
         try:
             transformed_image, bbox_nparray = transforms(image, np.array(bbox_list))
@@ -35,16 +37,17 @@ for images in all_json['images']:
             for annotations in all_json['annotations']:
                 if images['id'] == annotations['image_id']:
                     k += 1
+
+                    # avoid use the wrong annotations['bbox'] before the index error occuring
                     temp = bbox_nparray[k].tolist()
                     annotations['bbox'] = temp
-
         except:
-            print(images['file_name'])
             continue
-
         break
 
-    transformed_image = draw_rect(transformed_image, bbox_nparray)
+    # transformed_image = draw_rect(transformed_image, bbox_nparray)
+
+    # transfer array to image
     transformed_image = Image.fromarray(transformed_image, 'RGB') 
     transformed_image.save(images['file_name'])
 
