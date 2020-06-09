@@ -5,18 +5,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import json
 from PIL import Image
+import random
 
 all_json = json.load(open("0.json", "r"))
 class_type = 0.
 
-transforms = Sequence([RandomTranslate()])
-# RandomHorizontalFlip(1)
-# RandomScale(0.3, diff = True)
-# RandomTranslate(0.3, diff = True)
-# RandomRotate(20)
-# RandomShear(0.2)
-# Resize(608)
-# RandomHSV(100, 100, 100)
+random_number = random.randint(1, 3)
+random_sequence = random.sample( [ RandomHorizontalFlip(0.5), RandomScale(0.2, diff = True), RandomTranslate(0.1, diff = True), RandomRotate(3), RandomShear(0.2), RandomHSV(10, 10, 10) ] , random_number)
+transforms = Sequence(random_sequence)
 
 for images in all_json['images']:
 
