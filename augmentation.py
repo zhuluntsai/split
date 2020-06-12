@@ -11,7 +11,7 @@ all_json = json.load(open("0.json", "r"))
 class_type = 0.
 
 random_number = random.randint(1, 3)
-random_sequence = random.sample( [ RandomHorizontalFlip(0.5), RandomScale(0.2, diff = True), RandomTranslate(0.1, diff = True), RandomRotate(3), RandomShear(0.2), RandomHSV(10, 10, 10) ] , random_number)
+random_sequence = random.sample( [ RandomHorizontalFlip(0.5), RandomScale(0.1, diff = True), RandomTranslate(0.1, diff = True), RandomRotate(3), RandomShear(0.2), RandomHSV(10, 10, 10) ] , random_number)
 transforms = Sequence(random_sequence)
 
 for images in all_json['images']:
@@ -48,4 +48,4 @@ for images in all_json['images']:
     transformed_image.save(images['file_name'])
 
 with open('0.json', 'w') as outfile:
-        json.dump(all_json, outfile, indent = 2, ensure_ascii = False)
+    json.dump(all_json, outfile, indent = 2, ensure_ascii = False)
