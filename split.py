@@ -26,9 +26,9 @@ def create_parser():
  description:
 
     - the program will: combine json --> area filter --> split json (optional) --> convert to yolo (optional)
-    - type -s or -y to decide the final format
+    \n
+    - type -s or -y to determine the final format
     - type -tr or -aft to set the train ratio or area filter ratio
-    - remember keep images, jsons, and split.py in the same folder.
     ''')
 
     parser.add_argument("-s", "--split", help= "split json", action = "store_true")
@@ -242,11 +242,17 @@ if __name__ == "__main__":
     arg = create_parser()
     print(f"\n train ratio: {arg.train_ratio} \n area filter ratio: {arg.area_filter_ratio} \n")
 
-    combine()
-    print(" jsons have been combined")
+    skip_combine_and_filter = False
+    for item in os.listdir():
+        if item == "0.json":
+            skip_combine_and_filter = True
 
-    area_filter(arg)
-    print(" json has been filtered")
+    if skip_combine_and_filter == False:     
+        combine()
+        print(" jsons have been combined")
+
+        area_filter(arg)
+        print(" json has been filtered")
 
     #body
     train_file_name, test_file_name = random_file_name(arg)
@@ -289,6 +295,7 @@ if __name__ == "__main__":
             pass
 
     # end
-    # for item in os.listdir():
-    #     if item.startswith('temp'):
-    #         os.remove(item)
+    if arg.split == True or arg.convert_to_yolo == True:
+        for item in os.listdir():
+            if item.startswith('temp') or item == "0.json":
+                os.remove(item)
