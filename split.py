@@ -25,17 +25,20 @@ def create_parser():
     parser = argparse.ArgumentParser(formatter_class= argparse.RawDescriptionHelpFormatter, description= '''\
  description:
 
-    - the program will: combine json --> area filter --> split json (optional) --> convert to yolo (optional)
-    \n
+    - program will: combine json --> area filter --> split json (optional) --> convert to yolo (optional)
+    
     - type -s or -y to determine the final format
-    - type -tr or -aft to set the train ratio or area filter ratio
+    - type -tr to set the train ratio
+
+    - default parameter: 
+    
+        train_ratio: 0.8
     ''')
 
     parser.add_argument("-s", "--split", help= "split json", action = "store_true")
     parser.add_argument("-y", "--convert_to_yolo", help= "convert to yolo format", action = "store_true")
 
     parser.add_argument("-tr", "--train_ratio", help= "ratio of training data, default= 0.8", type= float, default= 0.8)
-    parser.add_argument("-afr", "--area_filter_ratio", help= "ratio of area in a picture, default=0.3", type= float, default=0.3)
 
     arg = parser.parse_args()
 
@@ -215,7 +218,6 @@ def result(arg, output_type: str):
     test labels amount: {test_labels_amount}
 
     train ratio: {arg.train_ratio}
-    area filter ratio: {arg.area_filter_ratio}
     ''')
 
     result_txt.close()
@@ -240,7 +242,7 @@ if __name__ == "__main__":
 
     #start
     arg = create_parser()
-    print(f"\n train ratio: {arg.train_ratio} \n area filter ratio: {arg.area_filter_ratio} \n")
+    print(f"\n train ratio: {arg.train_ratio}")
 
     skip_combine_and_filter = False
     for item in os.listdir():

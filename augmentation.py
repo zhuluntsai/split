@@ -14,12 +14,12 @@ def create_parser():
  description:
 
     - program will randomly choose 1~3 type of augmentation method 
-    \n
+    
     - type -f to set the file name
     - type -r to draw rectangle
-    \n
-    - all default parameter: 
-    \n
+    
+    - default parameter: 
+    
         flip: 0.5
         scale: 0.1, scale_diff: True
         translate: 0.1, translate_diff: True

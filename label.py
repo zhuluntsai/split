@@ -7,7 +7,7 @@ def create_parser():
  description:
 
     - program will visualize the labeling data
-    \n
+    
     - type -f to set the file name
     - type -r to draw rectangle
     - type -p to draw polygon
