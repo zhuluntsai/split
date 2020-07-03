@@ -46,8 +46,7 @@ def create_parser():
 arg = create_parser()
 all_json = json.load(open(arg.file_name, "r"))
 
-random_times = random.randint(3, 5)
-print(random_times)
+augmentation_times = random.randint(3, 5)
 
 print(f'''\
 
@@ -58,34 +57,10 @@ print(f'''\
         rotate: {arg.rotate}
         shear: {arg.shear}
         hsv: {arg.hsv[0]}, {arg.hsv[1]}, {arg.hsv[2]}
+
+augmentation times: {augmentation_times}
     ''')
 
-images_length = len(all_json['images'])
-annotations_length = len(all_json['annotations'])
-
-# for times in range(1, random_times + 1):
-#     print(times)
-#     i = 0
-#     j = 0
-
-#     for images in all_json['images']:
-#         i += 1
-#         images['id'] = images_length * (times - 1) + i
-#         all_json['images'].append(images)
-#         if i == images_length:
-#             break
-
-#     for annotations in all_json['annotations']:
-#         j += 1
-#         annotations['id'] = annotations_length * (times - 1) + j
-#         all_json['annotations'].append(annotations)
-#         if j == annotations_length:
-#             break
-
-# with open(arg.file_name, 'w') as outfile:
-#     json.dump(all_json, outfile, indent = 2, ensure_ascii = False)
-
-# sys.exit()
 for times in range(1, random_times + 1):
 
     random_number = random.randint(1, 3)
