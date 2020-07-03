@@ -45,65 +45,95 @@ def create_parser():
 
 arg = create_parser()
 all_json = json.load(open(arg.file_name, "r"))
-class_type = 0.
 
-random_number = random.randint(1, 3)
-random_sequence = random.sample( [ RandomHorizontalFlip(arg.flip), RandomScale(arg.scale, diff = arg.scale_diff), RandomTranslate(arg.translate, diff = arg.translate_diff), RandomRotate(arg.rotate), RandomShear(arg.shear), RandomHSV(int(arg.hsv[0]), int(arg.hsv[1]), int(arg.hsv[2])) ] , random_number)
-transforms = Sequence(random_sequence)
+random_times = random.randint(3, 5)
+print(random_times)
 
-# create the hint message
-random_sequence_to_str = ', '.join(str(random)[19:].split(' ')[0] for random in random_sequence)
 print(f'''\
 
-all parameter: 
-    flip: {arg.flip}
-    scale: {arg.scale}, scale_diff: {arg.scale_diff}
-    translate: {arg.translate}, translate_diff: {arg.translate_diff}
-    rotate: {arg.rotate}
-    shear: {arg.shear}
-    hsv: {arg.hsv[0]}, {arg.hsv[1]}, {arg.hsv[2]}
+    all parameter: 
+        flip: {arg.flip}
+        scale: {arg.scale}, scale_diff: {arg.scale_diff}
+        translate: {arg.translate}, translate_diff: {arg.translate_diff}
+        rotate: {arg.rotate}
+        shear: {arg.shear}
+        hsv: {arg.hsv[0]}, {arg.hsv[1]}, {arg.hsv[2]}
+    ''')
 
-augmentation method : {random_sequence_to_str}
-''')
+images_length = len(all_json['images'])
+annotations_length = len(all_json['annotations'])
 
-for images in all_json['images']:
+# for times in range(1, random_times + 1):
+#     print(times)
+#     i = 0
+#     j = 0
 
-    # print(images['file_name'])
-    image = cv2.imread(images['file_name'])[:,:,::-1]
-    bbox_list = []
+#     for images in all_json['images']:
+#         i += 1
+#         images['id'] = images_length * (times - 1) + i
+#         all_json['images'].append(images)
+#         if i == images_length:
+#             break
 
-    for annotations in all_json['annotations']:
-        if images['id'] == annotations['image_id']:
-            bbox_list.append([annotations['bbox'][0], annotations['bbox'][1], annotations['bbox'][0] + annotations['bbox'][2], annotations['bbox'][1] + annotations['bbox'][3], float(annotations['category_id'] - 1)])
-    
-    # if whole bbox is out of the image, program will retransform it until all bboxes are in the image
-    try:
-        while 1:
-            try:
-                transformed_image, bbox_nparray = transforms(image, np.array(bbox_list))
-                k = -1
+#     for annotations in all_json['annotations']:
+#         j += 1
+#         annotations['id'] = annotations_length * (times - 1) + j
+#         all_json['annotations'].append(annotations)
+#         if j == annotations_length:
+#             break
 
-                for annotations in all_json['annotations']:
-                    if images['id'] == annotations['image_id']:
-                        k += 1
+# with open(arg.file_name, 'w') as outfile:
+#     json.dump(all_json, outfile, indent = 2, ensure_ascii = False)
 
-                        # avoid use the wrong annotations['bbox'] before the index error occuring
-                        temp = bbox_nparray[k].tolist()
-                        annotations['bbox'] = temp
-            except:
-                continue
+# sys.exit()
+for times in range(1, random_times + 1):
+
+    random_number = random.randint(1, 3)
+    random_sequence = random.sample( [ RandomHorizontalFlip(arg.flip), RandomScale(arg.scale, diff = arg.scale_diff), RandomTranslate(arg.translate, diff = arg.translate_diff), RandomRotate(arg.rotate), RandomShear(arg.shear), RandomHSV(int(arg.hsv[0]), int(arg.hsv[1]), int(arg.hsv[2])) ] , random_number)
+    transforms = Sequence(random_sequence)
+
+    # create the hint message
+    random_sequence_to_str = ', '.join(str(random)[19:].split(' ')[0] for random in random_sequence)
+    print(f'augmentation method : {random_sequence_to_str}')
+
+    for images in all_json['images']:
+
+        image = cv2.imread(images['file_name'])[:,:,::-1]
+        images['file_name'] = f"{images['file_name'][0:5]}_{times}.jpg"
+        bbox_list = []
+
+        for annotations in all_json['annotations']:
+            if images['id'] == annotations['image_id']:
+                bbox_list.append([annotations['bbox'][0], annotations['bbox'][1], annotations['bbox'][0] + annotations['bbox'][2], annotations['bbox'][1] + annotations['bbox'][3], float(annotations['category_id'] - 1)])
+        
+        # if whole bbox is out of the image, program will retransform it until all bboxes are in the image
+        try:
+            while 1:
+                try:
+                    transformed_image, bbox_nparray = transforms(image, np.array(bbox_list))
+                    k = -1
+
+                    for annotations in all_json['annotations']:
+                        if images['id'] == annotations['image_id']:
+                            k += 1
+
+                            # avoid use the wrong annotations['bbox'] before the index error occuring
+                            temp = bbox_nparray[k].tolist()
+                            annotations['bbox'] = [temp[0], temp[1], temp[2] - temp[0], temp[3] - temp[1]]
+                except:
+                    continue
+                break
+        except KeyboardInterrupt:
             break
-    except KeyboardInterrupt:
-        break
 
-    if arg.draw_rectangle == True:
-        transformed_image = draw_rect(transformed_image, bbox_nparray)
+        if arg.draw_rectangle == True:
+            transformed_image = draw_rect(transformed_image, bbox_nparray)
 
-    # transfer array to image
-    transformed_image = Image.fromarray(transformed_image, 'RGB') 
-    transformed_image.save(images['file_name'])
+        # transfer array to image
+        transformed_image = Image.fromarray(transformed_image, 'RGB') 
+        transformed_image.save(images['file_name'])
 
-with open(arg.file_name, 'w') as outfile:
-    json.dump(all_json, outfile, indent = 2, ensure_ascii = False)
+    with open(f"temp_{times}_{arg.file_name}", 'w') as outfile:
+        json.dump(all_json, outfile, indent = 2, ensure_ascii = False)
 
 print("done")
