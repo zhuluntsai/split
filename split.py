@@ -52,7 +52,7 @@ def combine():
 
     i = 0
     j = 0
-    k = 0
+    k = 1
     accumulate = 0
 
     for item in os.listdir():

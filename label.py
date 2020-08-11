@@ -19,7 +19,7 @@ def create_parser():
     parser.add_argument("-r", "--draw_rectangle", help= "draw rectangle", action = "store_true")
     parser.add_argument("-p", "--draw_polygon", help= "draw polygon", action = "store_true")
     parser.add_argument("-t", "--add_text", help= "add text", action = "store_true")
-    parser.add_argument("-font", help= "set file path of font", type= str)
+    parser.add_argument("-font", help= "set file path of font", type= str, default= "/System/Library/Fonts/Supplemental/Arial.ttf")
 
     arg = parser.parse_args()
     return arg

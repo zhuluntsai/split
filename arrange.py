@@ -15,13 +15,12 @@ for item in os.listdir():
         new_json = copy.deepcopy(empty_json)
         original_json = json.load(open(item, "r"))
 
-        new_json['images'] = {
+        new_json['images'].append({
             "file_name": original_json['annotation']['filename'], 
-            "height": original_json['annotation']['size']['height'], 
-            "width": original_json['annotation']['size']['width'], 
-            "id": i}
+            "height": int(original_json['annotation']['size']['height']), 
+            "width": int(original_json['annotation']['size']['width']), 
+            "id": i})
 
-        i += 1
         j = 0
 
         try:
