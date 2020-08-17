@@ -10,7 +10,7 @@ import datetime
 
 # i: index for images, j: index for annotations
 
-original_folder_path = str(pathlib.Path().absolute())
+# original_folder_path = str(pathlib.Path().absolute())
 train_folder_path = original_folder_path + "/training_data"
 test_folder_path = original_folder_path + "/testing_data"
 images_folder_path = original_folder_path + "/images"
