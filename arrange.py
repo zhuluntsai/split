@@ -1,6 +1,7 @@
 import json
 import copy
 import os
+import pathlib
 
 empty_json = {"images": [], "type": "instances", "annotations": [], "categories": [] }
 
@@ -71,5 +72,5 @@ for item in os.listdir():
 
             new_json['categories'].append(category_content)
 
-        with open('/Users/weiluntsai/Desktop/0810temp/new_json/' + item, 'w') as outfile:
+        with open(item, 'w') as outfile:
                 json.dump(new_json, outfile, indent = 2, ensure_ascii = False)

@@ -49,6 +49,7 @@ def create_parser():
 def combine():
 
     combine_json = copy.deepcopy(empty_json)
+    rename_list = open(f"rename_list_combine.txt", "w")
 
     i = 0
     j = 0
@@ -66,6 +67,7 @@ def combine():
                 images['id'] = f"temp_{i:>05}"
 
                 os.rename(images['file_name'], f'temp_{i:>05}.jpg')
+                rename_list.write(images['file_name'] + f' / {i:>05}.jpg \n')
                 images['file_name'] = f'temp_{i:>05}.jpg'
                 combine_json['images'].append(images)
 
@@ -98,6 +100,8 @@ def combine():
 
     with open('0.json', 'w') as outfile:
         json.dump(combine_json, outfile, indent = 2, ensure_ascii = False)
+
+    rename_list.close()
 
 def area_filter(arg):
 
@@ -175,6 +179,8 @@ def split(usage: str, folder_path: str, file_name):
                 annotations['id'] = j 
 
                 annotations['image_id'] = accumulate
+                annotations['iscrowd'] = 0
+                annotations['area'] = annotations['bbox'][2] * annotations['bbox'][3]
                 data['annotations'].append(annotations)
 
                 # print(target_file_name + "/" + str(j) + "/" + str(accumulate))
@@ -182,6 +188,9 @@ def split(usage: str, folder_path: str, file_name):
                 continue
 
         accumulate += 1
+
+    for categories in all_json['categories']:
+        data['categories'].append(categories)
 
     with open(original_folder_path + f'/{usage}_data.json', 'w') as outfile:
         json.dump(data, outfile, indent = 2, ensure_ascii = False)
