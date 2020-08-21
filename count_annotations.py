@@ -1,23 +1,17 @@
 import json
 
-training_data_json = json.load(open("training_data.json", "r"))
-testing_data_json = json.load(open("testing_data.json", "r"))
+all_json = json.load(open("0.json", "r"))
 
-crane = 0
-boom = 0
+amount_list = []
 
-for annotations in training_data_json['annotations']:
-    if annotations['category_id'] == 1:
-        crane += 1
-    elif annotations['category_id'] == 2:
-        boom += 1
+for categories in all_json['categories']:
+    amount_list.append(0)
 
-for annotations in testing_data_json['annotations']:
-    if annotations['category_id'] == 1:
-        crane += 1
-    elif annotations['category_id'] == 2:
-        boom += 1
+for annotations in all_json['annotations']:
+    amount_list[annotations['category_id'] - 1] += 1
+total = 0
+for categories in all_json['categories']:
+    print(f"{categories['name']} : {amount_list[categories['id'] - 1]}")
+    total += amount_list[categories['id'] - 1]
 
-print(crane)
-print(boom)
-print(crane + boom)
+print(total)
