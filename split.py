@@ -66,7 +66,7 @@ def combine():
                 i += 1
                 images['id'] = f"temp_{i:>05}"
 
-                os.rename(images['file_name'], f'temp_{i:>05}.jpg')
+                # os.rename(images['file_name'], f'temp_{i:>05}.jpg')
                 rename_list.write(images['file_name'] + f' / {i:>05}.jpg \n')
                 images['file_name'] = f'temp_{i:>05}.jpg'
                 combine_json['images'].append(images)
@@ -77,6 +77,7 @@ def combine():
                 annotations['id'] = f"temp_{j:>05}"
                 
                 annotations['image_id'] = f"temp_{annotations['image_id'] + accumulate:>05}"
+                annotations['category_id'] = annotations['category_id'] + k - 1
                 combine_json['annotations'].append(annotations)
 
             # append 'categories'
@@ -274,12 +275,12 @@ if __name__ == "__main__":
     arg = create_parser()
     print(f"\n train ratio: {arg.train_ratio}")
 
-    skip_combine_and_filter = False
+    skip_combine = False
     for item in os.listdir():
         if item == "0.json":
-            skip_combine_and_filter = True
+            skip_combine = True
 
-    if skip_combine_and_filter == False:     
+    if skip_combine == False:     
         combine()
         print(" jsons have been combined")
 
