@@ -64,19 +64,19 @@ def combine():
             # append 'images' and rename the file name of pictures
             for images in old_json['images']:
                 i += 1
-                images['id'] = f"temp_{i:>05}"
+                images['id'] = f"temp_{i:>06}"
 
-                # os.rename(images['file_name'], f'temp_{i:>05}.jpg')
-                rename_list.write(images['file_name'] + f' / {i:>05}.jpg \n')
-                images['file_name'] = f'temp_{i:>05}.jpg'
+                os.rename(images['file_name'], f'temp_{i:>06}.jpg')
+                rename_list.write(images['file_name'] + f' / {i:>06}.jpg \n')
+                images['file_name'] = f'temp_{i:>06}.jpg'
                 combine_json['images'].append(images)
 
             # append 'annotations'
             for annotations in old_json['annotations']:  
                 j += 1
-                annotations['id'] = f"temp_{j:>05}"
+                annotations['id'] = f"temp_{j:>06}"
                 
-                annotations['image_id'] = f"temp_{annotations['image_id'] + accumulate:>05}"
+                annotations['image_id'] = f"temp_{annotations['image_id'] + accumulate:>06}"
                 annotations['category_id'] = annotations['category_id'] + k - 1
                 combine_json['annotations'].append(annotations)
 
@@ -118,7 +118,7 @@ def filter(arg):
 
         # check annotations['id'] is in the annotations_list
         for annotation_id in annotations_list:
-            if annotations['id'] == f"temp_{annotation_id:>05}":
+            if annotations['id'] == f"temp_{annotation_id:>06}":
                 is_pass = False
                 annotations_list.remove(annotation_id)
 
@@ -167,15 +167,15 @@ def split(usage: str, folder_path: str, file_name):
                 i += 1
                 images['id'] = i
 
-                os.rename(folder_path + "/" + images['file_name'], folder_path + "/" + f'{i:>05}.jpg')
-                rename_list.write(images['file_name'] + f' / {i:>05}.jpg \n')
-                images['file_name'] = f'{i:>05}.jpg'
+                os.rename(folder_path + "/" + images['file_name'], folder_path + "/" + f'{i:>06}.jpg')
+                rename_list.write(images['file_name'] + f' / {i:>06}.jpg \n')
+                images['file_name'] = f'{i:>06}.jpg'
                 data['images'].append(images)
                 
                 continue
 
         for annotations in all_json['annotations']:
-            if target_file_name == f"{annotations['image_id']:>05}.jpg":
+            if target_file_name == f"{annotations['image_id']:>06}.jpg":
                 j += 1
                 annotations['id'] = j 
 
@@ -216,11 +216,11 @@ def convert(usage: str, folder_path: str, file_name):
                 i += 1
                 os.rename(folder_path + "/" + images['file_name'], folder_path + "/" + images['file_name'][5:])
 
-                file_name_list_txt.write(f"custom_data/images/{images['id']:>05}.jpg\n")
-                yolo_format_txt = open(f"labels/{images['id']:>05}.txt", 'w')
+                file_name_list_txt.write(f"custom_data/images/{images['id']:>06}.jpg\n")
+                yolo_format_txt = open(f"labels/{images['id']:>06}.txt", 'w')
 
                 for annotations in all_json['annotations']:
-                    if str(annotations['image_id']) == f"{str(images['id']):>05}":
+                    if str(annotations['image_id']) == f"{str(images['id']):>06}":
                         j += 1
                         object_center_in_x = ((annotations['bbox'][0] + annotations['bbox'][2]) / 2) / images['width']
                         object_center_in_y = ((annotations['bbox'][1] + annotations['bbox'][3]) / 2) / images['height']
