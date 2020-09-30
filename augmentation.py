@@ -44,7 +44,6 @@ def create_parser():
     return arg
 
 arg = create_parser()
-all_json = json.load(open(arg.file_name, "r"))
 
 augmentation_times = random.randint(3, 5)
 
@@ -63,6 +62,7 @@ augmentation times: {augmentation_times}
 
 for times in range(1, augmentation_times + 1):
 
+    all_json = json.load(open(arg.file_name, "r"))
     random_number = random.randint(1, 3)
     random_sequence = random.sample( [ RandomHorizontalFlip(arg.flip), RandomScale(arg.scale, diff = arg.scale_diff), RandomTranslate(arg.translate, diff = arg.translate_diff), RandomRotate(arg.rotate), RandomShear(arg.shear), RandomHSV(int(arg.hsv[0]), int(arg.hsv[1]), int(arg.hsv[2])) ] , random_number)
     transforms = Sequence(random_sequence)
@@ -73,7 +73,6 @@ for times in range(1, augmentation_times + 1):
 
     for images in all_json['images']:
 
-        # print(images['file_name'])
         image = cv2.imread(images['file_name'])[:,:,::-1]
         images['file_name'] = f"{images['file_name'][0:5]}_{times}.jpg"
         bbox_list = []
