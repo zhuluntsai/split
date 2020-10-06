@@ -64,21 +64,20 @@ def combine():
             # append 'images' and rename the file name of pictures
             for images in old_json['images']:
                 i += 1
+                for annotations in old_json['annotations']:
+                    if annotations['image_id'] == images['id']:
+                        annotations['id'] = f"temp_{j:>06}"
+
+                        annotations['image_id'] = f"temp_{i:>06}"
+                        annotations['category_id'] = annotations['category_id'] + k - 1
+                        combine_json['annotations'].append(annotations)
+
                 images['id'] = f"temp_{i:>06}"
 
                 os.rename(images['file_name'], f'temp_{i:>06}.jpg')
                 rename_list.write(images['file_name'] + f' / {i:>06}.jpg \n')
                 images['file_name'] = f'temp_{i:>06}.jpg'
                 combine_json['images'].append(images)
-
-            # append 'annotations'
-            for annotations in old_json['annotations']:  
-                j += 1
-                annotations['id'] = f"temp_{j:>06}"
-                
-                annotations['image_id'] = f"temp_{annotations['image_id'] + accumulate:>06}"
-                annotations['category_id'] = annotations['category_id'] + k - 1
-                combine_json['annotations'].append(annotations)
 
             # append 'categories'
             for categories in old_json['categories']:
