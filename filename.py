@@ -26,7 +26,7 @@ k = 0
 
 
 for images in old_json['images']:
-    i += 1>
+    i += 1
     print(images['file_name'] + '>>>>>' + f'{i:>06}.jpg')
     
     os.rename(images['file_name'], f'{i:>06}.jpg')
