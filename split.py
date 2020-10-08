@@ -59,13 +59,14 @@ def combine():
     for item in os.listdir():
         if item.endswith('.json') and item != "0.json":
 
-            old_json = json.load(open(item, "r"))
+            old_json = normalize(json.load(open(item, "r")), item)
 
             # append 'images' and rename the file name of pictures
             for images in old_json['images']:
                 i += 1
                 for annotations in old_json['annotations']:
                     if annotations['image_id'] == images['id']:
+                        j += 1
                         annotations['id'] = f"temp_{j:>06}"
 
                         annotations['image_id'] = f"temp_{i:>06}"
@@ -267,6 +268,45 @@ def random_file_name(arg):
     train_file_name, test_file_name = np.split(np.array(all_file_name), [train_amount], 0)
 
     return train_file_name, test_file_name
+
+def normalize(old_json, item):
+
+    new_json = copy.deepcopy(empty_json)
+
+    i = 0
+    j = 0
+    k = 0
+
+    for categories in old_json['categories']:
+        k += 1
+        categories['original_id'] = categories['id']
+        categories['id'] = k
+        new_json['categories'].append(categories)
+
+    for images in old_json['images']:
+        i += 1
+        images['original_id'] = images['id']
+        images['id'] = i
+        new_json['images'].append(images)
+
+    for annotations in old_json['annotations']:
+        j += 1
+        annotations['id'] = j
+
+        for images in old_json['images']:
+            if images['original_id'] == annotations['image_id']:
+                annotations['image_id'] = images['id']
+
+        for categories in old_json['categories']:
+            if categories['original_id'] == annotations['category_id']:
+                annotations['category_id'] = categories['id']
+        
+        new_json['annotations'].append(annotations)      
+
+    # with open(f'{item}_normalize.json', 'w') as outfile:
+    #     json.dump(new_json, outfile, indent = 2, ensure_ascii = False) 
+    
+    return new_json
 
 if __name__ == "__main__":
 

@@ -21,7 +21,7 @@ combine_json = copy.deepcopy(empty_json)
 old_json = json.load(open(arg.filename, "r"))
 
 i = arg.start
-k = 0
+k = 1
 
 
 
