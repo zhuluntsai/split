@@ -296,10 +296,12 @@ def normalize(old_json, item):
         for images in old_json['images']:
             if images['original_id'] == annotations['image_id']:
                 annotations['image_id'] = images['id']
+                break
 
         for categories in old_json['categories']:
             if categories['original_id'] == annotations['category_id']:
                 annotations['category_id'] = categories['id']
+                break
         
         new_json['annotations'].append(annotations)      
 
