@@ -60,6 +60,8 @@ print(f'''\
 augmentation times: {augmentation_times}
     ''')
 
+image_amount = 0
+image_amount_limitation = 800
 for times in range(1, augmentation_times + 1):
 
     all_json = json.load(open(arg.file_name, "r"))
@@ -73,42 +75,50 @@ for times in range(1, augmentation_times + 1):
 
     for images in all_json['images']:
 
+        if image_amount > image_amount_limitation:
+            break
+
         image = cv2.imread(images['file_name'])[:,:,::-1]
-        images['file_name'] = f"{images['file_name'][0:5]}_{times}.jpg"
+        images['file_name'] = f"{images['file_name'][:-4]}_{times}.jpg"
         bbox_list = []
 
         for annotations in all_json['annotations']:
-            if images['id'] == annotations['image_id']:
+            if images['id'] == annotations['image_id'] and annotations['category_id'] == 2:
                 bbox_list.append([annotations['bbox'][0], annotations['bbox'][1], annotations['bbox'][0] + annotations['bbox'][2], annotations['bbox'][1] + annotations['bbox'][3], float(annotations['category_id'] - 1)])
         
-        # if whole bbox is out of the image, program will retransform it until all bboxes are in the image
-        try:
-            while 1:
-                try:
-                    transformed_image, bbox_nparray = transforms(image, np.array(bbox_list))
-                    k = -1
+        if len(bbox_list) != 0:
+            image_amount += 1
+            # if whole bbox is out of the image, program will retransform it until all bboxes are in the image
+            try:
+                while 1:
+                    try:
+                        transformed_image, bbox_nparray = transforms(image, np.array(bbox_list))
+                        k = -1
 
-                    for annotations in all_json['annotations']:
-                        if images['id'] == annotations['image_id']:
-                            k += 1
+                        for annotations in all_json['annotations']:
+                            if images['id'] == annotations['image_id']:
+                                k += 1
 
-                            # avoid use the wrong annotations['bbox'] before the index error occuring
-                            temp = bbox_nparray[k].tolist()
-                            annotations['bbox'] = [temp[0], temp[1], temp[2] - temp[0], temp[3] - temp[1]]
-                except:
-                    continue
+                                # avoid use the wrong annotations['bbox'] before the index error occuring
+                                temp = bbox_nparray[k].tolist()
+                                annotations['bbox'] = [temp[0], temp[1], temp[2] - temp[0], temp[3] - temp[1]]
+                    except:
+                        continue
+                    break
+            except KeyboardInterrupt:
                 break
-        except KeyboardInterrupt:
-            break
 
-        if arg.draw_rectangle == True:
-            transformed_image = draw_rect(transformed_image, bbox_nparray)
+            if arg.draw_rectangle == True:
+                transformed_image = draw_rect(transformed_image, bbox_nparray)
 
-        # transfer array to image
-        transformed_image = Image.fromarray(transformed_image, 'RGB') 
-        transformed_image.save(images['file_name'])
+            # transfer array to image
+            transformed_image = Image.fromarray(transformed_image, 'RGB') 
+            transformed_image.save(images['file_name'])
 
     with open(f"temp_{times}_{arg.file_name}", 'w') as outfile:
         json.dump(all_json, outfile, indent = 2, ensure_ascii = False)
+
+    if image_amount > image_amount_limitation:
+        break
 
 print("done")
