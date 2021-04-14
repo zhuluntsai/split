@@ -7,6 +7,7 @@ import sys
 import copy
 import numpy as np
 import datetime
+import math
 
 # i: index for images, j: index for annotations
 
@@ -114,27 +115,29 @@ def filterr():
         if item == "0.json":
             all_json = json.load(open(item, "r"))
 
-    amount_list = np.array(count_annotations(all_json))
+    amount_list, category_list = count_annotations(all_json)
 
-    print('enter category id you want to keep, and split by space')
-    filter_category_id_list = list(map(int, input().split(' ')))
-    print('enter the ratio of each category, and split by space')
-    filter_category_amount_list = list(map(float, input().split(' ')))
+    print(' enter category id you want to keep, and split by space')
+    category_id_list = list(map(int, input().split(' ')))
+    print(' enter the ratio of each category, and split by space')
+    category_amount_list = list(map(float, input().split(' ')))
 
-    if len(filter_category_id_list) != len(filter_category_amount_list):
+    if len(category_id_list) != len(category_amount_list):
         print("input category id and ratio doesn't match")
+        exit()
 
-    for i in range(len(filter_category_id_list)):
-        amount_index = filter_category_id_list[i]
-        filter_category_amount_list[i] *= amount_list[filter_category_id_list[i] - 1] 
-            
+    print(' id\tinstance amount\t\tname')
+    for i in range(len(category_id_list)):
+        category_amount_list[i] *= amount_list[category_id_list[i] - 1] 
+        print(f" {category_id_list[i]}\t{amount_list[i]} >> {math.floor(category_amount_list[i])}\t\t{category_list[category_id_list[i]-1]}")    
+
     for annotations in all_json['annotations']:
         is_pass = True
 
-        if annotations['category_id'] in filter_category_id_list:
-            index = filter_category_id_list.index(annotations['category_id'])
-            if filter_category_amount_list[index] >= 0:
-                filter_category_amount_list[index] -= 1
+        if annotations['category_id'] in category_id_list:
+            index = category_id_list.index(annotations['category_id'])
+            if category_amount_list[index] >= 0:
+                category_amount_list[index] -= 1
                 area_filter_json['annotations'].append(annotations)
                 images_list.append(annotations["image_id"])
 
@@ -326,6 +329,7 @@ def normalize(old_json, item):
 
 def count_annotations(json):
     amount_list = []
+    category_list = []
 
     for categories in json['categories']:
         amount_list.append(0)
@@ -334,11 +338,12 @@ def count_annotations(json):
     for annotations in json['annotations']:
         amount_list[annotations['category_id'] - 1] += 1
 
-    print(' id\tinstance amount\tname')
+    print(' id\tinstance amount\t\tname')
     for categories in json['categories']:
+        category_list.append(categories['name'])
         print(f" {categories['id']}\t{amount_list[categories['id'] - 1]}\t\t\t{categories['name']}")
     
-    return amount_list
+    return amount_list, category_list
 
 if __name__ == "__main__":
 
