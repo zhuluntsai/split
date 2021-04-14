@@ -116,6 +116,10 @@ def filter(arg):
         if item == "0.json":
             all_json = json.load(open(item, "r"))
 
+    for categories in all_json['categories']:
+        print(f"{categories['name']} : {categories['id']}")
+
+    filter_category_id_list = list(map(int, input().split(' ')))
     for annotations in all_json['annotations']:
         is_pass = True
 
@@ -131,7 +135,7 @@ def filter(arg):
         # if is_pass: 
         #     j += 1
 
-        if annotations['category_id'] == 1:
+        if annotations['category_id'] in filter_category_id_list:
             area_filter_json['annotations'].append(annotations)
 
             images_list.append(annotations["image_id"])
@@ -149,8 +153,11 @@ def filter(arg):
 
         # if images['id'] is not in the images_list
         if not is_pass:
-            os.remove(images['id'] + ".jpg")
-
+            try:
+                os.remove(images['id'] + ".jpg")
+            except:
+                pass
+            
     for categories in all_json['categories']:
         area_filter_json['categories'].append(categories)
 
