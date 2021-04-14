@@ -17,8 +17,6 @@ images_folder_path = original_folder_path + "/images"
 labels_folder_path = original_folder_path + "/labels"
 
 empty_json = {"images": [], "type": "instances", "annotations": [], "categories": [] }
-annotations_list = [359, 370, 381, 382, 371, 379, 216, 218, 221, 224, 226, 229, 232, 235, 238, 241, 244, 247, 250, 287, 311, 335, 337, 341, 344, 347, 350, 354, 356, 259, 362, 365, 368, 372, 373, 414, 417, 383, 387, 384, 389, 386, 385, 388, 394, 390, 391, 392, 393, 432, 447, 448, 449, 450, 452, 451, 456, 455, 453, 458, 454, 457, 472, 479, 533, 540, 544, 697, 732, 865, 867, 777, 778, 780, 779, 781, 782, 784, 783, 785, 786, 787, 788, 789, 790, 791, 793, 796, 792, 794, 795, 797, 798, 799, 800, 604, 606, 607, 605, 609, 608, 611, 610, 621, 615, 612, 622, 614, 613, 616, 617, 618, 619, 620, 623, 624, 625, 626, 627, 1, 2, 3, 4, 9, 10, 7, 6, 8, 5, 13, 12, 11, 15, 16, 24, 18, 19, 14, 20, 17, 21, 23, 22, 848, 854, 853, 857, 855, 852, 847, 856, 851, 849, 858, 850, 26, 27, 35, 31, 37, 32, 36, 38, 39, 30, 507, 509, 514, 508, 510, 512, 506, 516, 521, 523, 525, 527, 529, 538, 531, 536, 423, 421, 427, 429, 435, 437, 441, 445, 443,   255, 252, 259, 279, 280, 276, 261, 283,      265, 267, 269, 271, 272, 274, 286,       307, 309, 293, 297, 299, 300, 313,      321, 325, 327, 330, 332, 318, 315, 317, 304,    303, 290, 464, 467,       489, 487, 459, 476, 492, 480, 498, 473, 484, 496, 502, 546, 548, 549, 550, 561, 560, 552, 553, 555, 566, 564, 567, 558, 556, 569, 568, 574, 573, 584, 583, 575, 577, 578,      586, 588, 579, 652, 659, 660, 658, 665, 664, 663, 667, 668, 669, 679, 678, 677, 674, 672, 673, 683, 682, 681, 695, 694, 693, 687, 686, 689, 690, 691, 685, 700, 701, 699,    883, 885, 884, 877, 875, 876, 881, 880, 879, 870, 871, 869, 874, 873, 872, 887, 888, 889, 890, 891, 892, 896, 897, 898, 901, 900, 899, 895, 894, 893, 45, 44, 43, 42, 41, 40, 53, 54, 52, 56, 57, 55, 47, 48, 46, 51, 50, 49, 68, 69, 70, 71, 72, 74, 63, 64, 65, 61, 60, 59, 80, 81, 82, 85, 89, 86, 75, 76, 77, 158, 160, 161, 153, 154, 155, 163, 164, 165, 183, 185, 186, 189, 190, 193, 197, 198, 200, 194, 168, 169, 170, 174, 178, 179, 732, 737, 734, 735, 724, 723, 752, 751, 748, 750, 749, 745, 743, 746, 835, 842, 841, 843, 845, 846, 837, 145, 146, 150, 102, 103, 96, 94, 101, 100, 90, 803, 809, 804, 808, 91, 92, ]
-annotations_list = []
 images_list = []
 category_dict = { }
 
@@ -107,7 +105,7 @@ def combine():
 
     rename_list.close()
 
-def filter(arg):
+def filterr():
 
     area_filter_json = copy.deepcopy(empty_json)
     j = 0
@@ -116,29 +114,29 @@ def filter(arg):
         if item == "0.json":
             all_json = json.load(open(item, "r"))
 
-    for categories in all_json['categories']:
-        print(f"{categories['name']} : {categories['id']}")
+    amount_list = np.array(count_annotations(all_json))
 
+    print('enter category id you want to keep, and split by space')
     filter_category_id_list = list(map(int, input().split(' ')))
+    print('enter the ratio of each category, and split by space')
+    filter_category_amount_list = list(map(float, input().split(' ')))
+
+    if len(filter_category_id_list) != len(filter_category_amount_list):
+        print("input category id and ratio doesn't match")
+
+    for i in range(len(filter_category_id_list)):
+        amount_index = filter_category_id_list[i]
+        filter_category_amount_list[i] *= amount_list[filter_category_id_list[i] - 1] 
+            
     for annotations in all_json['annotations']:
         is_pass = True
 
-        # comment for filter image don't have annotation
-
-        # # check annotations['id'] is in the annotations_list
-        # for annotation_id in annotations_list:
-        #     if annotations['id'] == f"temp_{annotation_id:>06}":
-        #         is_pass = False
-        #         annotations_list.remove(annotation_id)
-
-        # # if annotations['id'] is not in the annotations_list
-        # if is_pass: 
-        #     j += 1
-
         if annotations['category_id'] in filter_category_id_list:
-            area_filter_json['annotations'].append(annotations)
-
-            images_list.append(annotations["image_id"])
+            index = filter_category_id_list.index(annotations['category_id'])
+            if filter_category_amount_list[index] >= 0:
+                filter_category_amount_list[index] -= 1
+                area_filter_json['annotations'].append(annotations)
+                images_list.append(annotations["image_id"])
 
     for images in all_json['images']:
         is_pass = False
@@ -159,6 +157,7 @@ def filter(arg):
                 pass
             
     for categories in all_json['categories']:
+        # if categories['id'] in filter_category_id_list: 
         area_filter_json['categories'].append(categories)
 
     with open('0.json', 'w') as outfile:
@@ -325,6 +324,22 @@ def normalize(old_json, item):
     
     return new_json
 
+def count_annotations(json):
+    amount_list = []
+
+    for categories in json['categories']:
+        amount_list.append(0)
+    amount_list.append(0)
+
+    for annotations in json['annotations']:
+        amount_list[annotations['category_id'] - 1] += 1
+
+    print(' id\tinstance amount\tname')
+    for categories in json['categories']:
+        print(f" {categories['id']}\t{amount_list[categories['id'] - 1]}\t\t\t{categories['name']}")
+    
+    return amount_list
+
 if __name__ == "__main__":
 
     #start
@@ -341,7 +356,7 @@ if __name__ == "__main__":
         print(" jsons have been combined")
 
     if arg.filter == True:
-        filter(arg)
+        filterr()
         print(" json has been filtered")
 
     #body
@@ -362,10 +377,10 @@ if __name__ == "__main__":
 
         print(" json has been split")
 
-        try:
-            result(arg, "split")
-        except:
-            pass
+        # try:
+        #     result(arg, "split")
+        # except:
+        #     pass
 
     if arg.convert_to_yolo == True:
         os.mkdir(images_folder_path)
@@ -379,10 +394,10 @@ if __name__ == "__main__":
 
         print(" format has been converted to yolo format")
 
-        try:
-            result(arg, "yolo")
-        except:
-            pass
+        # try:
+        #     result(arg, "yolo")
+        # except:
+        #     pass
 
     # end
     if arg.split == True or arg.convert_to_yolo == True:
