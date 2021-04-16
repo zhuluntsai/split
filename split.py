@@ -19,7 +19,6 @@ labels_folder_path = original_folder_path + "/labels"
 
 empty_json = {"images": [], "type": "instances", "annotations": [], "categories": [] }
 images_list = []
-category_dict = { }
 
 def create_parser():
 
@@ -50,6 +49,7 @@ def combine():
 
     combine_json = copy.deepcopy(empty_json)
     rename_list = open(f"rename_list_combine.txt", "w")
+    category_dict = { }
 
     i = 0
     j = 0
@@ -57,7 +57,7 @@ def combine():
     accumulate = 0
 
     for item in os.listdir():
-        if item.endswith('.json') and item != "0.json":
+        if item.endswith('.json'):
 
             old_json = normalize(json.load(open(item, "r")), item)
 
@@ -129,7 +129,7 @@ def filterr():
     print(' id\tinstance amount\t\tname')
     for i in range(len(category_id_list)):
         category_amount_list[i] *= amount_list[category_id_list[i] - 1] 
-        print(f" {category_id_list[i]}\t{amount_list[i]} >> {math.floor(category_amount_list[i])}\t\t{category_list[category_id_list[i]-1]}")    
+        print(f" {category_id_list[i]}\t{amount_list[category_id_list[i]-1]} >> {math.floor(category_amount_list[i])}\t\t{category_list[category_id_list[i]-1]}")    
 
     for annotations in all_json['annotations']:
         is_pass = True
@@ -160,11 +160,14 @@ def filterr():
                 pass
             
     for categories in all_json['categories']:
-        # if categories['id'] in filter_category_id_list: 
-        area_filter_json['categories'].append(categories)
+        if categories['id'] in category_id_list: 
+            area_filter_json['categories'].append(categories)
 
     with open('0.json', 'w') as outfile:
         json.dump(area_filter_json, outfile, indent = 2, ensure_ascii = False)
+
+    # normalize
+    combine()
 
 def split(usage: str, folder_path: str, file_name):
 
