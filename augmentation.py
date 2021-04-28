@@ -61,7 +61,7 @@ augmentation times: {augmentation_times}
     ''')
 
 image_amount = 0
-image_amount_limitation = 800
+# image_amount_limitation = 800
 for times in range(1, augmentation_times + 1):
 
     all_json = json.load(open(arg.file_name, "r"))
@@ -75,15 +75,15 @@ for times in range(1, augmentation_times + 1):
 
     for images in all_json['images']:
 
-        if image_amount > image_amount_limitation:
-            break
+        # if image_amount > image_amount_limitation:
+        #     break
 
         image = cv2.imread(images['file_name'])[:,:,::-1]
         images['file_name'] = f"{images['file_name'][:-4]}_{times}.jpg"
         bbox_list = []
 
         for annotations in all_json['annotations']:
-            if images['id'] == annotations['image_id'] and annotations['category_id'] == 2:
+            if images['id'] == annotations['image_id']:
                 bbox_list.append([annotations['bbox'][0], annotations['bbox'][1], annotations['bbox'][0] + annotations['bbox'][2], annotations['bbox'][1] + annotations['bbox'][3], float(annotations['category_id'] - 1)])
         
         if len(bbox_list) != 0:
@@ -118,7 +118,7 @@ for times in range(1, augmentation_times + 1):
     with open(f"temp_{times}_{arg.file_name}", 'w') as outfile:
         json.dump(all_json, outfile, indent = 2, ensure_ascii = False)
 
-    if image_amount > image_amount_limitation:
-        break
+    # if image_amount > image_amount_limitation:
+    #     break
 
 print("done")
