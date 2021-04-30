@@ -18,7 +18,7 @@ images_folder_path = original_folder_path + "/images"
 labels_folder_path = original_folder_path + "/labels"
 
 empty_json = {"images": [], "type": "instances", "annotations": [], "categories": [] }
-images_list = []
+images_list = [ ]
 
 def create_parser():
 
@@ -48,8 +48,10 @@ def create_parser():
 def combine():
 
     combine_json = copy.deepcopy(empty_json)
-    rename_list = open(f"rename_list_combine.txt", "w")
+    # rename_list = open(f"rename_list_combine.txt", "w")
     category_dict = { }
+
+    category_dict = collect_category(category_dict)
 
     i = 0
     j = 0
@@ -57,9 +59,17 @@ def combine():
     accumulate = 0
 
     for item in os.listdir():
-        if item.endswith('.json'):
+        if item.endswith('.json'): #and item != "0.json":
 
             old_json = normalize(json.load(open(item, "r")), item)
+
+            old_category_dict = { }
+
+            for l, categories in enumerate(old_json['categories']):
+                old_category_dict.update({categories['name'] : l})
+
+            key_list = list(old_category_dict.keys())
+            val_list = list(old_category_dict.values())
 
             # append 'images' and rename the file name of pictures
             for images in old_json['images']:
@@ -69,8 +79,9 @@ def combine():
                         j += 1
                         annotations['id'] = f"temp_{j:>06}"
 
+                        annotations['segmentation'] = [ ]
                         annotations['image_id'] = f"temp_{i:>06}"
-                        annotations['category_id'] = annotations['category_id'] + k - 1
+                        annotations['category_id'] = category_dict[key_list[val_list.index(annotations['category_id'] - 1)]]
                         combine_json['annotations'].append(annotations)
 
                 images['id'] = f"temp_{i:>06}"
@@ -78,33 +89,25 @@ def combine():
                     os.rename(images['file_name'], f'temp_{i:>06}.jpg')
                 except:
                     pass
-                rename_list.write(images['file_name'] + f' / {i:>06}.jpg \n')
+                # rename_list.write(images['file_name'] + f' / {i:>06}.jpg \n')
                 images['file_name'] = f'temp_{i:>06}.jpg'
                 combine_json['images'].append(images)
 
-            # append 'categories'
-            for categories in old_json['categories']:
-
-                category_name = categories['name']
-                if category_name not in category_dict:
-                    category_dict.update({category_name : k})
-
-                    category_content = {
-                        "supercategory": "none",
-                        "id": k,
-                        "name": category_name}
-
-                    combine_json['categories'].append(category_content)
-
-                    k += 1
-
-            accumulate += len(old_json['images'])
             os.remove(item)
+    
+    # append 'categories'
+    for i, categories in enumerate(category_dict):
+        category_content = {
+            "supercategory": "none",
+            "id": i + 1,
+            "name": categories}
+
+        combine_json['categories'].append(category_content)
 
     with open('0.json', 'w') as outfile:
         json.dump(combine_json, outfile, indent = 2, ensure_ascii = False)
 
-    rename_list.close()
+    # rename_list.close()
 
 def filterr():
 
@@ -173,7 +176,7 @@ def split(usage: str, folder_path: str, file_name):
 
     all_json = json.load(open("0.json", "r"))
     data = copy.deepcopy(empty_json)
-    rename_list = open(f"rename_list_{usage}.txt", "w")
+    # rename_list = open(f"rename_list_{usage}.txt", "w")
 
     i = 0
     j = 0
@@ -188,7 +191,7 @@ def split(usage: str, folder_path: str, file_name):
                 images['id'] = i
 
                 os.rename(folder_path + "/" + images['file_name'], folder_path + "/" + f'{i:>06}.jpg')
-                rename_list.write(images['file_name'] + f' / {i:>06}.jpg \n')
+                # rename_list.write(images['file_name'] + f' / {i:>06}.jpg \n')
                 images['file_name'] = f'{i:>06}.jpg'
                 data['images'].append(images)
                 
@@ -216,14 +219,14 @@ def split(usage: str, folder_path: str, file_name):
     with open(original_folder_path + f'/{usage}_data.json', 'w') as outfile:
         json.dump(data, outfile, indent = 2, ensure_ascii = False)
 
-    rename_list.close()
+    # rename_list.close()
     
     return i, j
 
 def convert(usage: str, folder_path: str, file_name):
 
     all_json = json.load(open("0.json", "r"))
-    file_name_list_txt = open(f"{usage}.txt", 'w')
+    # file_name_list_txt = open(f"{usage}.txt", 'w')
 
     i = 0
     j = 0
@@ -236,7 +239,7 @@ def convert(usage: str, folder_path: str, file_name):
                 i += 1
                 os.rename(folder_path + "/" + images['file_name'], folder_path + "/" + images['file_name'][5:])
 
-                file_name_list_txt.write(f"custom_data/images/{images['id']:>06}.jpg\n")
+                # file_name_list_txt.write(f"custom_data/images/{images['id']:>06}.jpg\n")
                 yolo_format_txt = open(f"labels/{images['id']:>06}.txt", 'w')
 
                 for annotations in all_json['annotations']:
@@ -251,7 +254,7 @@ def convert(usage: str, folder_path: str, file_name):
 
                 yolo_format_txt.close()
 
-    file_name_list_txt.close()
+    # file_name_list_txt.close()
 
     return i, j
 
@@ -288,6 +291,28 @@ def random_file_name(arg):
     train_file_name, test_file_name = np.split(np.array(all_file_name), [train_amount], 0)
 
     return train_file_name, test_file_name
+
+def collect_category(category_dict):
+    
+    k = 1
+    for item in os.listdir():
+        if item.endswith('.json'):
+
+            old_json = json.load(open(item, "r"))
+            
+            for categories in old_json['categories']:
+
+                category_name = categories['name']
+                if category_name not in category_dict:
+                    category_dict.update({category_name : k})
+
+                    category_content = {
+                        "supercategory": "none",
+                        "id": k,
+                        "name": category_name}
+                    k += 1
+
+    return category_dict
 
 def normalize(old_json, item):
 

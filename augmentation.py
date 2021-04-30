@@ -29,6 +29,7 @@ def create_parser():
     ''')
 
     parser.add_argument("-f", "--file_name", help= "json file name", type= str)
+    parser.add_argument("-n", "--aug_times", help= "times of augmentation", type= int, default=5)
     parser.add_argument("-r", "--draw_rectangle", help= "draw rectangle", action = "store_true")
 
     parser.add_argument("-flip", help= "RandomHorizontalFlip", type= float, default= 0.5)
@@ -45,7 +46,7 @@ def create_parser():
 
 arg = create_parser()
 
-augmentation_times = random.randint(3, 5)
+augmentation_times = arg.aug_times
 
 print(f'''\
 
