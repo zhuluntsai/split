@@ -8,6 +8,7 @@ import copy
 import numpy as np
 import datetime
 import math
+from tqdm import tqdm
 
 # i: index for images, j: index for annotations
 
@@ -58,7 +59,7 @@ def combine():
     k = 1
     accumulate = 0
 
-    for item in os.listdir():
+    for item in tqdm(os.listdir()):
         if item.endswith('.json'): #and item != "0.json":
 
             old_json = normalize(json.load(open(item, "r")), item)
@@ -182,7 +183,7 @@ def split(usage: str, folder_path: str, file_name):
     j = 0
     accumulate = 1
 
-    for target_file_name in file_name:
+    for target_file_name in tqdm(file_name):
 
         # match target file name and file name in 0.json
         for images in all_json['images']:
