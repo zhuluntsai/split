@@ -59,7 +59,7 @@ def combine():
     k = 1
     accumulate = 0
 
-    for item in tqdm(os.listdir()):
+    for item in os.listdir():
         if item.endswith('.json'): #and item != "0.json":
 
             old_json = normalize(json.load(open(item, "r")), item)
@@ -73,7 +73,8 @@ def combine():
             val_list = list(old_category_dict.values())
 
             # append 'images' and rename the file name of pictures
-            for images in old_json['images']:
+            print(item)
+            for images in tqdm(old_json['images']):
                 i += 1
                 for annotations in old_json['annotations']:
                     if annotations['image_id'] == images['id']:
