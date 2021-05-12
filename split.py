@@ -73,7 +73,7 @@ def combine():
             val_list = list(old_category_dict.values())
 
             # append 'images' and rename the file name of pictures
-            print(item)
+            print(f' {item}')
             for images in tqdm(old_json['images']):
                 i += 1
                 for annotations in old_json['annotations']:
@@ -183,7 +183,7 @@ def split(usage: str, folder_path: str, file_name):
     i = 0
     j = 0
     accumulate = 1
-
+    print(f' creating {usage} data')
     for target_file_name in tqdm(file_name):
 
         # match target file name and file name in 0.json
