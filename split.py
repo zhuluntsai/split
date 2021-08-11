@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import json
 import os
 import argparse
@@ -11,12 +14,6 @@ import math
 from tqdm import tqdm
 
 # i: index for images, j: index for annotations
-
-original_folder_path = str(pathlib.Path().absolute())
-train_folder_path = original_folder_path + "/training_data"
-test_folder_path = original_folder_path + "/testing_data"
-images_folder_path = original_folder_path + "/images"
-labels_folder_path = original_folder_path + "/labels"
 
 empty_json = {"images": [], "type": "instances", "annotations": [], "categories": [] }
 images_list = [ ]
@@ -39,6 +36,7 @@ def create_parser():
     parser.add_argument("-s", "--split", help= "split json", action = "store_true")
     parser.add_argument("-y", "--convert_to_yolo", help= "convert to yolo format", action = "store_true")
     parser.add_argument("-f", "--filter", help= "area filter", action = "store_true")
+    parser.add_argument('-i', '--image_path', type=str, default='')
 
     parser.add_argument("-tr", "--train_ratio", help= "ratio of training data, default= 0.8", type= float, default= 0.8)
 
@@ -46,23 +44,23 @@ def create_parser():
 
     return arg
 
-def combine():
+def combine(original_folder_path):
 
     combine_json = copy.deepcopy(empty_json)
     # rename_list = open(f"rename_list_combine.txt", "w")
     category_dict = { }
 
-    category_dict = collect_category(category_dict)
+    category_dict = collect_category(category_dict, original_folder_path)
 
     i = 0
     j = 0
     k = 1
     accumulate = 0
 
-    for item in os.listdir():
+    for item in os.listdir(original_folder_path):
         if item.endswith('.json'): #and item != "0.json":
 
-            old_json = normalize(json.load(open(item, "r")), item)
+            old_json = normalize(json.load(open(path + item, "r")), item)
 
             old_category_dict = { }
 
@@ -73,7 +71,7 @@ def combine():
             val_list = list(old_category_dict.values())
 
             # append 'images' and rename the file name of pictures
-            print(f' {item}')
+            print(f' combining {item}')
             for images in tqdm(old_json['images']):
                 i += 1
                 for annotations in old_json['annotations']:
@@ -81,21 +79,32 @@ def combine():
                         j += 1
                         annotations['id'] = f"temp_{j:>06}"
 
-                        annotations['segmentation'] = [ ]
+                        # annotations['segmentation'] = [ ]
                         annotations['image_id'] = f"temp_{i:>06}"
                         annotations['category_id'] = category_dict[key_list[val_list.index(annotations['category_id'] - 1)]]
                         combine_json['annotations'].append(annotations)
 
                 images['id'] = f"temp_{i:>06}"
+                
                 try:
-                    os.rename(images['file_name'], f'temp_{i:>06}.jpg')
+                    os.rename(path + images['file_name'], path + f'temp_{i:>06}.jpg')
                 except:
                     pass
+
                 # rename_list.write(images['file_name'] + f' / {i:>06}.jpg \n')
                 images['file_name'] = f'temp_{i:>06}.jpg'
+
+                try:
+                    images['aug'] = images['aug']
+                except:
+                    if '_' in item[-8:] or item == "0.json":
+                        images['aug'] = 1
+                    else:
+                        images['aug'] = 0
+
                 combine_json['images'].append(images)
 
-            os.remove(item)
+            os.remove(path + item)
     
     # append 'categories'
     for i, categories in enumerate(category_dict):
@@ -106,19 +115,17 @@ def combine():
 
         combine_json['categories'].append(category_content)
 
-    with open('0.json', 'w') as outfile:
+    with open(path + '0.json', 'w') as outfile:
         json.dump(combine_json, outfile, indent = 2, ensure_ascii = False)
 
     # rename_list.close()
 
-def filterr():
+def filterr(original_folder_path):
 
     area_filter_json = copy.deepcopy(empty_json)
     j = 0
 
-    for item in os.listdir():
-        if item == "0.json":
-            all_json = json.load(open(item, "r"))
+    all_json = json.load(open(path + "0.json", "r"))
 
     amount_list, category_list = count_annotations(all_json)
 
@@ -160,7 +167,7 @@ def filterr():
         # if images['id'] is not in the images_list
         if not is_pass:
             try:
-                os.remove(images['id'] + ".jpg")
+                os.remove(path + images['id'] + ".jpg")
             except:
                 pass
             
@@ -168,15 +175,15 @@ def filterr():
         if categories['id'] in category_id_list: 
             area_filter_json['categories'].append(categories)
 
-    with open('0.json', 'w') as outfile:
+    with open(path + '0.json', 'w') as outfile:
         json.dump(area_filter_json, outfile, indent = 2, ensure_ascii = False)
 
     # normalize
-    combine()
+    combine(original_folder_path)
 
 def split(usage: str, folder_path: str, file_name):
 
-    all_json = json.load(open("0.json", "r"))
+    all_json = json.load(open(path + "0.json", "r"))
     data = copy.deepcopy(empty_json)
     # rename_list = open(f"rename_list_{usage}.txt", "w")
 
@@ -227,7 +234,7 @@ def split(usage: str, folder_path: str, file_name):
 
 def convert(usage: str, folder_path: str, file_name):
 
-    all_json = json.load(open("0.json", "r"))
+    all_json = json.load(open(path + "0.json", "r"))
     # file_name_list_txt = open(f"{usage}.txt", 'w')
 
     i = 0
@@ -278,29 +285,38 @@ def result(arg, output_type: str):
 
     result_txt.close()
 
-def random_file_name(arg):
+def random_file_name(arg, original_folder_path):
 
     # pylint: disable = unbalanced-tuple-unpacking
 
-    all_file_name = []
+    file_name_list = []
+    aug_file_name_list = []
 
-    for item in os.listdir(original_folder_path):
-        if item.endswith('.jpg'):
-            all_file_name.append(item)
+    all_json = json.load(open(path + "0.json", "r"))
 
-    np.random.shuffle(all_file_name)
-    train_amount = int(len(all_file_name) * float(arg.train_ratio))
-    train_file_name, test_file_name = np.split(np.array(all_file_name), [train_amount], 0)
+    for images in all_json['images']:
+        if images['aug']:
+            aug_file_name_list.append(images['file_name'])
+        else:
+            file_name_list.append(images['file_name'])
 
-    return train_file_name, test_file_name
+    np.random.shuffle(file_name_list)
+    train_amount = int(len(file_name_list) * float(arg.train_ratio))
+    train_file_name, test_file_name = np.split(np.array(file_name_list), [train_amount], 0)
 
-def collect_category(category_dict):
+    np.random.shuffle(aug_file_name_list)
+    train_amount = int(len(aug_file_name_list) * float(arg.train_ratio))
+    aug_train_file_name, aug_test_file_name = np.split(np.array(aug_file_name_list), [train_amount], 0)
+
+    return np.concatenate((train_file_name, aug_train_file_name)), test_file_name
+
+def collect_category(category_dict, original_folder_path):
     
     k = 1
-    for item in os.listdir():
+    for item in os.listdir(original_folder_path):
         if item.endswith('.json'):
 
-            old_json = json.load(open(item, "r"))
+            old_json = json.load(open(path + item, "r"))
             
             for categories in old_json['categories']:
 
@@ -352,7 +368,7 @@ def normalize(old_json, item):
         
         new_json['annotations'].append(annotations)      
 
-    # with open(f'{item}_normalize.json', 'w') as outfile:
+    # with open(path + f'{item}_normalize.json', 'w') as outfile:
     #     json.dump(new_json, outfile, indent = 2, ensure_ascii = False) 
     
     return new_json
@@ -379,23 +395,35 @@ if __name__ == "__main__":
 
     #start
     arg = create_parser()
+
+    original_folder_path = os.getcwd()
+    path = ''
+    if arg.image_path != '':
+        original_folder_path = arg.image_path[:-1]
+        path = arg.image_path
+    
+    train_folder_path = original_folder_path + "/training_data"
+    test_folder_path = original_folder_path + "/testing_data"
+    images_folder_path = original_folder_path + "/images"
+    labels_folder_path = original_folder_path + "/labels"
+
     print(f"\n train ratio: {arg.train_ratio}")
 
     skip_combine = False
-    for item in os.listdir():
+    for item in os.listdir(original_folder_path):
         if item == "0.json":
             skip_combine = True
 
     if skip_combine == False:     
-        combine()
+        combine(original_folder_path)
         print(" jsons have been combined")
 
     if arg.filter == True:
-        filterr()
+        filterr(original_folder_path)
         print(" json has been filtered")
 
     #body
-    train_file_name, test_file_name = random_file_name(arg)
+    train_file_name, test_file_name = random_file_name(arg, original_folder_path)
 
     if arg.split == True:
         os.mkdir(train_folder_path)
@@ -436,6 +464,6 @@ if __name__ == "__main__":
 
     # end
     if arg.split == True or arg.convert_to_yolo == True:
-        for item in os.listdir():
+        for item in os.listdir(original_folder_path):
             if item.startswith('temp') or item == "0.json":
-                os.remove(item)
+                os.remove(path + item)

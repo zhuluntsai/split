@@ -9,8 +9,9 @@ category_dict = { }
 def create_parser():
 
     parser = argparse.ArgumentParser(formatter_class= argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("-f", "--filename", type= str)
-    parser.add_argument("-s", "--start", type= int)
+    parser.add_argument("-f", "--filename", type=str)
+    parser.add_argument("-s", "--start", type=int)
+    parser.add_argument('-i', '--image_path', type=str, default='')
     arg = parser.parse_args()
 
     return arg
@@ -19,22 +20,24 @@ def create_parser():
 arg = create_parser()
 combine_json = copy.deepcopy(empty_json)
 old_json = json.load(open(arg.filename, "r"))
+path = arg.image_path
 
-i = arg.start
+i = arg.start + len(old_json['images'])
 k = 1
 
-
+old_json['images'].reverse()
 
 for images in old_json['images']:
-    i += 1
-    print(images['file_name'] + '>>>>>' + f'{i:>06}.jpg')
+    i -= 1
+    # print(images['file_name'] + '>>>>>' + f'{i:>06}.jpg')
     
-    os.rename(images['file_name'], f'{i:>06}.jpg')
+    os.rename(path + images['file_name'], path + f'{i:>06}.jpg')
 
 
     images['file_name'] = f'{i:>06}.jpg'
     combine_json['images'].append(images)
 
+combine_json['images'].reverse()
 
 
 for annotations in old_json['annotations']:      
